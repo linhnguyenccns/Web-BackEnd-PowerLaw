@@ -9,6 +9,8 @@ const blogModule = require('../models/blog')
 const questionModule = require('../models/question')
 const nofModule = require('../models/nof')
 const inforModule = require('../models/info')
+const topModule = require('../models/top')
+const emailModule = require('../models/email')
 
 //================================================
 //Thồn tin chung
@@ -411,6 +413,116 @@ router.put('/nof/:id', async (req, res)=> {
 
     try {
         const data = await nofModule.findByIdAndUpdate({_id: id}, {Icon, Title1, Title2, Content })
+
+        return res.status(200).json({ success: true, message: 'Thành Công' })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error' +error})
+    }
+})
+
+//================================================
+//Email
+router.post('/email', middlewareCntroller.verifyToken, async (req, res) => {
+    const {Content } = req.body
+
+    if (!Content) {
+        return res.status(402).json({ success: false, message: 'Vui lòng nhận đủ các trường trước khi đăng' })
+    }
+
+    try {
+        const data = await emailModule({Content })
+        await data.save()
+
+        return res.status(200).json({ success: true, message: 'Created successfully' })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error' })
+    }
+})
+
+router.get('/email', async (req, res) => {
+    try {
+        const data = await emailModule.find()
+
+        return res.status(200).json({ success: true, message: 'successfully', data: data })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error' })
+    }
+})
+
+
+router.get('/email/:id', async (req, res) => {
+    const id = email.params.id
+
+    try {
+        const data = await emailModule.findById(id)
+
+        return res.status(200).json({ success: true, message: 'successfully', data: data })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error' })
+    }
+})
+
+router.put('/email/:id', async (req, res)=> {
+    const id = req.params.id
+    const {Content } = req.body
+
+    try {
+        const data = await emailModule.findByIdAndUpdate({_id: id}, { Content })
+
+        return res.status(200).json({ success: true, message: 'Thành Công' })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error' +error})
+    }
+})
+
+//================================================
+//Top Img
+router.post('/top', middlewareCntroller.verifyToken, async (req, res) => {
+    const { Icon, Content } = req.body
+
+    if (!Icon || !Content) {
+        return res.status(402).json({ success: false, message: 'Vui lòng nhận đủ các trường trước khi đăng' })
+    }
+
+    try {
+        const data = await topModule({ Icon,  Content })
+        await data.save()
+
+        return res.status(200).json({ success: true, message: 'Created successfully' })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error' })
+    }
+})
+
+router.get('/top', async (req, res) => {
+
+    try {
+        const data = await topModule.find()
+
+        return res.status(200).json({ success: true, message: 'successfully', data: data })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error' })
+    }
+})
+
+router.get('/top/:id', async (req, res) => {
+    const id = req.params.id
+
+    try {
+        const data = await topModule.findById(id)
+
+        return res.status(200).json({ success: true, message: 'successfully', data: data })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Server Error' })
+    }
+})
+
+router.put('/top/:id', async (req, res)=> {
+    const id = req.params.id
+    const { Icon, Content } = req.body
+
+    try {
+        const data = await topModule.findByIdAndUpdate({_id: id}, {Icon, Content })
 
         return res.status(200).json({ success: true, message: 'Thành Công' })
     } catch (error) {
