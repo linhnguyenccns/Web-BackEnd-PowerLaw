@@ -1,5 +1,4 @@
 const express = require('express')
-const port = 5000
 const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
@@ -23,6 +22,7 @@ const connectDB = async () => {
 }
 
 connectDB()
+const port = 5000
 //===============================================================
 const app = express()
 
@@ -37,6 +37,6 @@ app.use(bodyParser.json())
 app.use('/',accountRouter)
 app.use('/',homeRouter)
 //===============================================================
-app.listen(process.env.port || port, () => {
+app.listen(process.env.PORT || port, () => {
     console.log(`Example app listening on port ${process.env.port} vs ${port}`)
   })
