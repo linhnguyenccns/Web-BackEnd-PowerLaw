@@ -1,8 +1,6 @@
 const express = require('express')
 var router = express.Router()
 
-//hash password
-const argon2 = require('argon2');
 //jwt
 var jwt = require('jsonwebtoken')
 //DB models
@@ -31,8 +29,8 @@ router.post('/registration', async (req, res) => {
     }
 
     //All ok
-    const hashPassword = await argon2.hash(password)
-    const newUser = new AccountModel({ email, password: hashPassword, })
+
+    const newUser = new AccountModel({ email, password, })
     await newUser.save()
 
     return res.status(200).json({ success: true, message: 'Created successfully' })
