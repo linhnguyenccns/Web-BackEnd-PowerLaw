@@ -451,7 +451,7 @@ router.get('/email', async (req, res) => {
 
 
 router.get('/email/:id', async (req, res) => {
-    const id = email.params.id
+    const id = req.params.id
 
     try {
         const data = await emailModule.findById(id)
@@ -465,6 +465,10 @@ router.get('/email/:id', async (req, res) => {
 router.put('/email/:id', async (req, res)=> {
     const id = req.params.id
     const {Content } = req.body
+
+    if(!Content) {
+        return res.status(401).json({ success: false, message: 'Vui Lòng điền đầy đủ thông tin' })
+    }
 
     try {
         const data = await emailModule.findByIdAndUpdate({_id: id}, { Content })
