@@ -1,6 +1,7 @@
 const express = require('express')
 var router = express.Router()
 const middlewareCntroller = require("../controllers/middlewareController")
+const dotenv = require('dotenv')
 //DB models
 
 const postServiceModel = require('../models/postService')
@@ -11,6 +12,10 @@ const nofModule = require('../models/nof')
 const inforModule = require('../models/info')
 const topModule = require('../models/top')
 const emailModule = require('../models/email')
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 //================================================
 //Thồn tin chung
@@ -532,6 +537,49 @@ router.put('/top/:id', async (req, res)=> {
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Server Error' +error})
     }
+})
+
+//================================================
+router.post('/send-email', async (req, res) => {
+    const { Name, emailNhan, PhoneNumber, Title, Content } = req.body
+
+    if (!Name || !emailNhan || !PhoneNumber || !Title || !Content) {
+        return res.status(401).json({ message: 'vui lòng điền đầy đủ', success: false })
+    } else {
+        const msg = {
+            to: 'linhnguyen.vfin@gmail.com',
+            from: 'linhnguyen.wisekeylaw@gmail.com', // Use the email address or domain you verified above
+            subject: 'Email Tư vấn ' + Title,
+            text: 'and easy to do anywhere, even with Node.js',
+            html: `<h1>Email Nhận tư vấn: ${emailNhan}</h1><p>Số Điện Thoại: ${PhoneNumber}</p><p>Tên: ${Name}</p><p>Nội Dung: ${Content}</p>`,
+        };
+        //ES6
+        sgMail
+            .send(msg)
+            .then(() => { }, error => {
+                console.error(error);
+
+                if (error.response) {
+                    console.error(error.response.body)
+                }
+            });
+        //ES8
+        (async () => {
+            try {
+                await sgMail.send(msg);
+                res.status(200).json({ message: 'send Success', success: true })
+            } catch (error) {
+                console.error(error);
+                res.status(401).json({ message: 'send fall' })
+                if (error.response) {
+                    console.error(error.response.body)
+                }
+                res.status(200).json({ message: 'lỗi server', success: false })
+            }
+        })();
+    }
+
+
 })
 
 module.exports = router
